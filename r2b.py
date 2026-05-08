@@ -66,5 +66,5 @@ if __name__ == "__main__":
         print( "       epsilon in degrees, default 0.001 (~100m). Increase for fewer waypoints.")
         sys.exit(1)
 
-    epsilon = float(sys.argv[3]) if len(sys.argv) == 4 else 0.001
+    epsilon = abs(float(sys.argv[3]) if len(sys.argv) == 4 else 0.001)
     convert(sys.argv[1], sys.argv[2], epsilon)
