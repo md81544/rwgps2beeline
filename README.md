@@ -13,7 +13,8 @@ This script uses the pip `rdp` package. You will need to install this first. If 
 ### Usage
 * Plan a route in RWGPS
 * Export that route as a "GPS Track" - leave all the options presented as defaults.
-* Run the script against that GPX file, for example `./r2b.py test.gpx test_beeline.gpx [--waypoints 10]`
+* Run the script against that GPX file, for example `./r2b.sh test.gpx test_beeline.gpx [--waypoints 10]`
+  (If you are on Windows you won't be able to run `r2b.sh` - you'd run it as `python3 ./r2b.py` with the parameters).
 * The number of waypoints generated defaults to **approximately** 10. You can change via the `--waypoints` flag.
 * Import the new GPX created into the Beeline route planner
 * Select "Waypoints Only" as the import option
