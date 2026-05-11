@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # rwgps_to_beeline.py
 # Converts a RideWithGPS GPX track to a Beeline-compatible waypoint-only GPX
 # using the Ramer-Douglas-Peucker algorithm to thin the track to turn points.
