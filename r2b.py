@@ -3,22 +3,42 @@
 # Converts a RideWithGPS GPX track to a Beeline-compatible waypoint-only GPX
 # using the Ramer-Douglas-Peucker algorithm to thin the track to turn points.
 #
-# Usage: python3 rwgps_to_beeline.py input.gpx output.gpx [epsilon]
-# epsilon is in degrees, default 0.001 (~100m). Increase to get fewer points.
-#
-# Requires pip package rdp
+# Usage: r2b.py input.gpx output.gpx [--waypoints N]
+# Waypoints default to DEFAULT_WAYPOINTS (defined below)
 
 import sys
+import argparse
 import xml.etree.ElementTree as ET
 from rdp import rdp
 
 NS = "http://www.topografix.com/GPX/1/1"
+DEFAULT_WAYPOINTS = 10
 ET.register_namespace("", NS)
 
 def tag(name):
     return f"{{{NS}}}{name}"
 
-def convert(input_path, output_path, epsilon):
+def find_epsilon(points, target, tolerance=1):
+    """Binary search for epsilon that produces approximately target waypoints."""
+    lo, hi = 0.0, 1.0
+
+    # Expand hi until we get few enough points
+    while len(rdp(points, epsilon=hi)) > target:
+        hi *= 2
+
+    for _ in range(50):  # max binary search iterations; convergence typically happens in ~15
+        mid = (lo + hi) / 2
+        count = len(rdp(points, epsilon=mid))
+        if abs(count - target) <= tolerance:
+            return mid
+        if count > target:
+            lo = mid
+        else:
+            hi = mid
+
+    return (lo + hi) / 2
+
+def convert(input_path, output_path, target_waypoints):
     tree = ET.parse(input_path)
     root = tree.getroot()
 
@@ -36,8 +56,13 @@ def convert(input_path, output_path, epsilon):
 
     print(f"Input:  {len(points)} track points")
 
-    simplified = rdp(points, epsilon=epsilon)
-    print(f"Output: {len(simplified)} waypoints (epsilon={epsilon})")
+    if target_waypoints >= len(points):
+        print(f"Warning: requested {target_waypoints} waypoints but input only has {len(points)} points — using all")
+        simplified = points
+    else:
+        epsilon = find_epsilon(points, target_waypoints)
+        simplified = rdp(points, epsilon=epsilon)
+        print(f"Output: {len(simplified)} waypoints (converged on epsilon={epsilon:.6f})")
 
     new_root = ET.Element("gpx")
     new_root.set("xmlns", NS)
@@ -60,11 +85,19 @@ def convert(input_path, output_path, epsilon):
 
     print(f"Written to {output_path}")
 
-if __name__ == "__main__":
-    if len(sys.argv) not in (3, 4):
-        print(f"Usage: {sys.argv[0]} input.gpx output.gpx [epsilon]")
-        print( "       epsilon in degrees, default 0.001 (~100m). Increase for fewer waypoints.")
-        sys.exit(1)
+def positive_int(value):
+    n = int(value)
+    if n <= 0:
+        raise argparse.ArgumentTypeError(f"waypoints must be a positive integer, got {n}")
+    return n
 
-    epsilon = abs(float(sys.argv[3]) if len(sys.argv) == 4 else 0.001)
-    convert(sys.argv[1], sys.argv[2], epsilon)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Convert a RideWithGPS GPX track to a Beeline-compatible waypoint GPX")
+    parser.add_argument("input",  help="Input GPX file (RideWithGPS track export)")
+    parser.add_argument("output", help="Output GPX file (Beeline-compatible)")
+    parser.add_argument("--waypoints", type=positive_int, default=DEFAULT_WAYPOINTS,
+                    metavar="N", help=f"Target number of waypoints (default: {DEFAULT_WAYPOINTS})")
+    args = parser.parse_args()
+
+    convert(args.input, args.output, args.waypoints)
