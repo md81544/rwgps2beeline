@@ -8,7 +8,7 @@ This script simply converts an RWGPS route into a series of waypoints, which Bee
 This *may* work with GPX files output from other route planners. **Please let me know if this helps with other programs** and I can update the documentation.
 
 # Requirements
-This script uses the pip `rdp` package. You will need to install this first. If you're on a Mac with Homebrew you can run it in a `venv` to locally install `rdp`.
+**This script uses the pip `rdp` package. You will need to install this first**. If you're on a Mac with Homebrew you can run it in a `venv` to locally install `rdp`. The helper script `r2b.sh` automatically runs activate/deactivate if it finds a `venv/` directory in the directory that contains the script.
 
 ### Usage
 * Plan a route in RWGPS
