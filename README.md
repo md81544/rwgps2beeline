@@ -10,8 +10,8 @@ This script simply converts an externally-generated GPX route into a series of w
 ### Usage
 * Plan a route in RWGPS
 * Export that route as a "GPS Track" - leave all the options presented as defaults.
-* Run the script against that GPX file, for example `python3 ./r2b.sh test.gpx test_beeline.gpx [--waypoints 10]`
-* The number of waypoints generated defaults to **approximately** 10. You can change via the `--waypoints` flag.
+* Run the script against that GPX file, for example `python3 ./r2b.sh test.gpx test_beeline.gpx [--waypoints 30]`
+* The number of waypoints generated defaults to **approximately** 30. You can change via the `-w` (or `--waypoints`) flag.
 * Import the new GPX created into the Beeline route planner
 * Select "Waypoints Only" as the import option
 * This will show the waypoints in the planner with straight lines between them
