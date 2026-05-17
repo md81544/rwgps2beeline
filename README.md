@@ -1,7 +1,7 @@
 ## R2B
 This small Python script allows you to plan a route in RideWithGPS (RWGPS) and and convert the GPX to a format that can be used to import into Beeline.
 
-This has also been tested successfully with GPX exports from Komoot. Please feel free to contact me if you want to try other route planners' output (or let me know if you found it worked with others, and I'll create/update a compatibility list).
+This has also been tested successfully with GPX exports from **Komoot**. Please feel free to contact me if you want to try other route planners' output (or let me know if you found it worked with others, and I'll create/update a compatibility list).
 
 Beeline CAN import other route planners'  routes directly, but it's annoying if you go off-route because of, say, roadworks - Beeline simply tells you you're off-route and won't re-route you.
 
