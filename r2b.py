@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # rwgps_to_beeline.py
 # Converts a RideWithGPS GPX track to a Beeline-compatible waypoint-only GPX
 # using the Ramer-Douglas-Peucker algorithm to thin the track to turn points.
@@ -8,11 +9,48 @@
 import sys
 import argparse
 import xml.etree.ElementTree as ET
-from rdp import rdp
 
 NS = "http://www.topografix.com/GPX/1/1"
-DEFAULT_WAYPOINTS = 10
+DEFAULT_WAYPOINTS = 30
 ET.register_namespace("", NS)
+
+def perpendicular_distance(point, line_start, line_end):
+    """Distance from point to a line defined by two points."""
+    x0, y0 = point
+    x1, y1 = line_start
+    x2, y2 = line_end
+
+    dx, dy = x2 - x1, y2 - y1
+
+    # If the line is actually a point, return simple distance
+    if dx == 0 and dy == 0:
+        return ((x0 - x1) ** 2 + (y0 - y1) ** 2) ** 0.5
+
+    return abs(dy * x0 - dx * y0 + x2 * y1 - y2 * x1) / (dx ** 2 + dy ** 2) ** 0.5
+
+def rdp(points, epsilon):
+    """Ramer-Douglas-Peucker polyline simplification."""
+    if len(points) < 3:
+        return points
+
+    # Find the point with the maximum distance from the line start->end
+    max_dist = 0.0
+    max_idx = 0
+    for i in range(1, len(points) - 1):
+        dist = perpendicular_distance(points[i], points[0], points[-1])
+        if dist > max_dist:
+            max_dist = dist
+            max_idx = i
+
+    if max_dist > epsilon:
+        # Significant point found — recurse on each half
+        left  = rdp(points[:max_idx + 1], epsilon)
+        right = rdp(points[max_idx:], epsilon)
+        # Avoid duplicating the split point
+        return left[:-1] + right
+    else:
+        # No significant points — discard everything in between
+        return [points[0], points[-1]]
 
 def tag(name):
     return f"{{{NS}}}{name}"
@@ -95,7 +133,7 @@ if __name__ == "__main__":
         description="Convert a RideWithGPS GPX track to a Beeline-compatible waypoint GPX")
     parser.add_argument("input",  help="Input GPX file (RideWithGPS track export)")
     parser.add_argument("output", help="Output GPX file (Beeline-compatible)")
-    parser.add_argument("--waypoints", type=positive_int, default=DEFAULT_WAYPOINTS,
+    parser.add_argument("-w", "--waypoints", type=positive_int, default=DEFAULT_WAYPOINTS,
                     metavar="N", help=f"Target number of waypoints (default: {DEFAULT_WAYPOINTS})")
     args = parser.parse_args()
 

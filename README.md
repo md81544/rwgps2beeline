@@ -7,14 +7,10 @@ Beeline CAN import other route planners'  routes directly, but it's annoying if 
 
 This script simply converts an externally-generated GPX route into a series of waypoints, which Beeline can generate a route from, which then acts like you planned it in the (subpar) Beeline route planner.
 
-# Requirements
-**This script uses the pip `rdp` package. You will need to install this first**. If you're on a Mac with Homebrew you can run it in a `venv` to locally install `rdp`. The helper script `r2b.sh` automatically runs activate/deactivate if it finds a `venv/` directory in the directory that contains the script.
-
 ### Usage
 * Plan a route in RWGPS
 * Export that route as a "GPS Track" - leave all the options presented as defaults.
-* Run the script against that GPX file, for example `./r2b.sh test.gpx test_beeline.gpx [--waypoints 10]`
-  (If you are on Windows you won't be able to run `r2b.sh` - you'd run it as `python3 ./r2b.py` with the parameters).
+* Run the script against that GPX file, for example `python3 ./r2b.sh test.gpx test_beeline.gpx [--waypoints 10]`
 * The number of waypoints generated defaults to **approximately** 10. You can change via the `--waypoints` flag.
 * Import the new GPX created into the Beeline route planner
 * Select "Waypoints Only" as the import option
