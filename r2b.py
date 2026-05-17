@@ -15,7 +15,7 @@ DEFAULT_WAYPOINTS = 30
 ET.register_namespace("", NS)
 
 def perpendicular_distance(point, line_start, line_end):
-    """Distance from point to a line defined by two points."""
+    # Distance from point to a line defined by two points.
     x0, y0 = point
     x1, y1 = line_start
     x2, y2 = line_end
@@ -29,7 +29,7 @@ def perpendicular_distance(point, line_start, line_end):
     return abs(dy * x0 - dx * y0 + x2 * y1 - y2 * x1) / (dx ** 2 + dy ** 2) ** 0.5
 
 def rdp(points, epsilon):
-    """Ramer-Douglas-Peucker polyline simplification."""
+    # Ramer-Douglas-Peucker polyline simplification.
     if len(points) < 3:
         return points
 
@@ -56,7 +56,7 @@ def tag(name):
     return f"{{{NS}}}{name}"
 
 def find_epsilon(points, target, tolerance=1):
-    """Binary search for epsilon that produces approximately target waypoints."""
+    # Binary search for epsilon that produces approximately target waypoints
     lo, hi = 0.0, 1.0
 
     # Expand hi until we get few enough points
